@@ -106,7 +106,7 @@ static void set_xbee_receiver_addr(uint8_t *buf, uint8_t offset, uint8_t addr)
   uint16_t receiver = 0;
   if (addr == 0x0) {
     receiver = GROUND_STATION_ADDR;
-  } else if (addr == 0xFF) {
+  } else if (addr == PPRZLINK_MSG_BROADCAST) {
     receiver = 0xFFFF;
   } else {
     receiver = (uint16_t) addr;
