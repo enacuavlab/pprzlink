@@ -27,13 +27,13 @@ from pprzlink.message import PprzMessage
 # use Enum from python 3.4 if available (https://www.python.org/dev/peps/pep-0435/)
 # (backports as enum34 on pypi)
 try:
-    from enum import Enum
+    from enum import IntEnum
 except ImportError:
     Enum = object
 
 STX = 0x99
 
-class PprzParserState(Enum):
+class PprzParserState(IntEnum):
     WaitSTX = 1
     GotSTX = 2
     GotLength = 3
