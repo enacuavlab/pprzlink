@@ -234,14 +234,14 @@ void xbee_transport_init(struct xbee_transport *t, struct link_device *dev, uint
   t->type = type;
   t->rssi = 0;
   t->trans_rx.msg_received = false;
-  t->trans_tx.size_of = (size_of_t) size_of;
+  t->trans_tx.size_of               = (size_of_t) size_of;
   t->trans_tx.check_available_space = (check_available_space_t) check_available_space;
-  t->trans_tx.put_bytes = (put_bytes_t) put_bytes;
-  t->trans_tx.put_named_byte = (put_named_byte_t) put_named_byte;
-  t->trans_tx.start_message = (start_message_t) start_message;
-  t->trans_tx.end_message = (end_message_t) end_message;
-  t->trans_tx.overrun = (overrun_t) overrun;
-  t->trans_tx.count_bytes = (count_bytes_t) count_bytes;
+  t->trans_tx.put_bytes             = (put_bytes_t) put_bytes;
+  t->trans_tx.put_named_byte        = (put_named_byte_t) put_named_byte;
+  t->trans_tx.start_message         = (start_message_t) start_message;
+  t->trans_tx.end_message           = (end_message_t) end_message;
+  t->trans_tx.overrun               = (overrun_t) overrun;
+  t->trans_tx.count_bytes           = (count_bytes_t) count_bytes;
   t->trans_tx.impl = (void *)(t);
 
   // Empty buffer before init process
