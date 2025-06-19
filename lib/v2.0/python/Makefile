@@ -20,6 +20,8 @@
 #
 
 MAKE = make
+DESTDIR ?= $(shell python -m site --user-site)
+
 
 all:
 
@@ -29,5 +31,9 @@ install:
 	$(Q)test -d $(DESTDIR) || mkdir -p $(DESTDIR)
 	$(Q)cp -r src/pprzlink $(DESTDIR)
 
-.PHONY: all install
+uninstall:
+	# Remove Python library from DESTDIR
+	$(Q) rm -r $(DESTDIR)/pprzlink
+
+.PHONY: all install uninstall
 
