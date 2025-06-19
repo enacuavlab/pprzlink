@@ -34,12 +34,10 @@
 #include "pprzlink/pprzlink_transport.h"
 #include "pprzlink/pprzlink_device.h"
 
-// Generic function pointer for all reception messages. `void* trans` should be replaced by the appropriate `struct XXX_transport* trans`
-typedef void (*check_and_parse_t)(struct link_device *dev, void *trans, uint8_t *buf, bool *msg_available);
 
 // Encapsulation structure for splitting messages 
 typedef struct {
-  uint8_t msg_id;     ///< Current message id
+  uint8_t msg_uid;    ///< Current message unique id (to avoid overlap between subsequent transmissions)
   uint8_t part_total; ///< Total number of parts for this message
   uint8_t part_id;    ///< Part ID (from 0 to part_total-1)
   
@@ -59,15 +57,16 @@ struct encapsulated_transport {
   uint8_t msg_buf_rx[TRANSPORT_PAYLOAD_LEN];///< Storage buffer at reception
   uint8_t writing_head_rx;                  ///< Reading and writing offset for the rx buffer
   uint8_t payload_len_rx;                   ///< Total size of the message
+  encapsulated_msg msg_part;                ///< Storage for the last message part seen
+  enum EncapsulatedReceptionPhase phase;    ///< Finite State Machine for recombining message parts at reception 
   // -- generic transmission interface
   struct transport_tx trans_tx;
   // -- specific packeted transport variables
   uint8_t msg_buf_tx[TRANSPORT_PAYLOAD_LEN];///< Storage buffer before slicing for sending
   uint8_t writing_head_tx,reading_head_tx;  ///< Reading and writing offset for the tx buffer
   uint8_t payload_len_tx;                   ///< Total size of the message
-  uint8_t msg_id;                           ///< Local ID to identify the message currently being sent
-  encapsulated_msg msg_part;                ///< Storage for the last message part seen
-  enum EncapsulatedReceptionPhase phase;         ///< Finite State Machine for recombining message parts at reception 
+  uint8_t msg_uid;                          ///< Local ID to identify the message currently being sent
+
 
   // -- underlying transport structure
   uint8_t under_max_size;

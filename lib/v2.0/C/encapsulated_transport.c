@@ -77,7 +77,7 @@ static int send_chunk(struct pprzling_msg *msg, long fd, encapsulated_msg* enc_m
     // Compute encapsulated message length
     uint8_t caps_len = encapsulated_size(enc_msg);
     uint8_t header_content[] = {
-        enc_msg->msg_id,
+        enc_msg->msg_uid,
         enc_msg->part_total,
         enc_msg->part_id,
         enc_msg->content_size,
@@ -114,7 +114,7 @@ static int send_chunk(struct pprzling_msg *msg, long fd, encapsulated_msg* enc_m
 static int encapsulated_parse_part(struct encapsulated_transport* encap_trans, uint8_t* src_buf, uint8_t* dest_buf)
 {
     // Recover header data of the part
-    uint8_t msg_id          = buf[0];
+    uint8_t msg_uid         = buf[0];
     uint8_t part_total      = buf[1];
     uint8_t part_id         = buf[2];
     uint8_t content_size    = buf[3];
@@ -124,7 +124,7 @@ static int encapsulated_parse_part(struct encapsulated_transport* encap_trans, u
     switch (encap_trans->phase)
     {
         case ENCAPSULATED_NEW:
-            encap_trans->msg_part.msg_id            = msg_id;
+            encap_trans->msg_part.msg_uid           = msg_uid;
             encap_trans->msg_part.part_total        = part_total;
             encap_trans->msg_part.part_id           = part_id;
             encap_trans->msg_part.content_size      = content_size;
@@ -233,10 +233,14 @@ static void end_message(struct pprzlink_msg *msg, long fd)
     uint8_t encap_available_size = encap_max_size-encapsulated_header_size;
     
     uint8_t parts_id = 0;
-    uint8_t parts_count = 1+encap_trans->payload_len_tx/(encap_available_size);
+    uint8_t parts_count = (encap_trans->payload_len_tx)/(encap_available_size);
+
+    // Put an additional message only if the remainder of the division is non zero
+    parts_count += (encap_trans->payload_len_tx-encap_available_size*parts_count > 0) ? 1 : 0;
+
     encapsulated_msg encap_msg;
     encap_msg.parts_remaining = parts_count-1;
-    encap_msg.msg_id = encap_trans->msg_id;
+    encap_msg.msg_uid = encap_trans->msg_uid;
 
     int send_status;
 
@@ -251,7 +255,7 @@ static void end_message(struct pprzlink_msg *msg, long fd)
         encap_msg.parts_remaining--;
     }
 
-    encap_trans->msg_id++;
+    encap_trans->msg_uid++;
 }
 
 
@@ -305,12 +309,12 @@ void encapsulated_init(struct encapsulated_transport* encap_trans,
     encap_trans->trans_tx.count_bytes           = (count_bytes_t) count_bytes;
     encap_trans->trans_tx.impl = (void *)(encap_trans);
 
-    encap_trans->msg_id = 0;
+    encap_trans->msg_uid = 0;
 
-    encap_trans->under_max_size = under_max_size;
-    encap_trans->under_trans_rx = under_trans_rx;
-    encap_trans->under_trans_tx = under_trans_tx;
-    encap_trans->check_and_parse = check_and_parse;
+    encap_trans->under_max_size     = under_max_size;
+    encap_trans->under_trans_rx     = under_trans_rx;
+    encap_trans->under_trans_tx     = under_trans_tx;
+    encap_trans->check_and_parse    = check_and_parse;
 }   
 
 void encapsulated_check_and_parse(struct link_device *dev, struct encapsulated_transport *encap_trans, uint8_t *buf, bool *msg_available)

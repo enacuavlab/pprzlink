@@ -40,6 +40,10 @@ extern "C" {
 #define TRANSPORT_PAYLOAD_LEN 256
 #endif
 
+
+// Generic function pointer for all reception messages. `void* trans` should be replaced by the appropriate `struct XXX_transport* trans`
+typedef void (*check_and_parse_t)(struct link_device *dev, void *trans, uint8_t *buf, bool *msg_available);
+
 /** Generic reception transport header
  */
 struct transport_rx {
