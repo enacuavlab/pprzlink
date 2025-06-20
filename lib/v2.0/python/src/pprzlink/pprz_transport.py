@@ -92,6 +92,9 @@ class PprzTransport(AbstractTransport):
     def unpack(self) -> UnpackedMessage:
         """Unpack the last received message"""
         return self.unpack_pprz_msg(self.buf)
+    
+    def unpack_raw(self) -> bytes | None:
+        return self.buf
 
     @staticmethod
     def calculate_checksum(data:bytes) -> typing.Tuple[int,int]:

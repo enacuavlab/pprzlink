@@ -169,6 +169,9 @@ class XbeeTransport(AbstractTransport):
     def unpack(self) -> typing.Optional[UnpackedMessage]:
         return self.unpack_bytes(self.buffer)
     
+    def unpack_raw(self) -> bytes:
+        return self.buffer
+    
     def _tx_16_format(self,dest:int,data:bytes,ack:bool=False,options:int=0) -> bytes:
         """ Pack the data in an Xbee TX 16 format
 

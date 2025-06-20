@@ -73,12 +73,22 @@ class AbstractTransport(ABC):
     @abstractmethod
     def unpack(self) -> typing.Optional[UnpackedMessage]:
         """ Unpack the content of the internal buffer
+        Should only be called right after `parse_byte` returns True
 
         Returns:
             typing.Optional[UnpackedMessage]: None, if the message is not a Pprz one, or an Unpacked message,
                 that is a tuple containing (Sender ID:int, message:PprzMessage, Receiver ID: int, Component ID: int)
         """
         ...
+        
+    @abstractmethod
+    def unpack_raw(self) -> typing.Optional[bytes]:
+        """ Return the raw content of the internal buffer, or None if there is no content to be returned
+        Should only be called right after `parse_byte` returns True
+
+        Returns:
+            typing.Optional[bytes]: Last received content if there is some, None otherwise
+        """
         
     @abstractmethod
     def pack_data(self,sender:int, data:bytes, receiver:int=0, component:int=0) -> bytes:
